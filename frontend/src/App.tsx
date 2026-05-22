@@ -12,8 +12,10 @@ import styles from './App.module.css'
 const LIVEKIT_URL          = import.meta.env.VITE_LIVEKIT_URL as string
 const API_KEY              = import.meta.env.VITE_LIVEKIT_API_KEY as string
 const API_SECRET           = import.meta.env.VITE_LIVEKIT_API_SECRET as string
-const RECEPTIONIST_NAME    = (import.meta.env.VITE_RECEPTIONIST_NAME as string) || 'Priya'
-const CLINIC_NAME          = (import.meta.env.VITE_CLINIC_NAME as string) || 'Demo Clinic'
+
+declare global { interface Window { __CONFIG__?: { RECEPTIONIST_NAME?: string; CLINIC_NAME?: string } } }
+const RECEPTIONIST_NAME    = window.__CONFIG__?.RECEPTIONIST_NAME || (import.meta.env.VITE_RECEPTIONIST_NAME as string) || 'Priya'
+const CLINIC_NAME          = window.__CONFIG__?.CLINIC_NAME || (import.meta.env.VITE_CLINIC_NAME as string) || 'Demo Clinic'
 
 type Language = 'en' | 'ta'
 
