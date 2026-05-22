@@ -70,17 +70,11 @@ async def entrypoint(ctx: JobContext):
         AGENT_NAME,
         receptionist_name=Settings.RECEPTIONIST_NAME,
         clinic_name=Settings.CLINIC_NAME,
-    )
-
-    lang_instruction = (
-        "Caller selected Tamil. Start in Tamil. If they switch to English mid-call, follow them. "
-        "For digit readback always use Tamil words: பூஜ்யம்=0 ஒன்று=1 இரண்டு=2 மூன்று=3 நான்கு=4 ஐந்து=5 ஆறு=6 ஏழு=7 எட்டு=8 ஒன்பது=9"
-        if lang == "ta" else
-        "Caller selected English. Start in English. If they speak Tamil, respond in Tamil."
+        lang=lang,
     )
 
     agent = Agent(
-        instructions=system_prompt + f"\n\n## ACTIVE LANGUAGE\n{lang_instruction}\n",
+        instructions=system_prompt,
     )
 
     # 6. Configure BVC Noise Cancellation if available
@@ -117,6 +111,17 @@ async def entrypoint(ctx: JobContext):
         if participant.kind == rtc.ParticipantKind.PARTICIPANT_KIND_STANDARD:
             logger.info(f"Caller {participant.identity} disconnected — closing session.")
             asyncio.ensure_future(session.aclose())
+
+    # Safety net: if booking succeeded, close session after TTS finishes
+    @session.on("agent_speech_committed")
+    def on_speech_committed(msg) -> None:
+        text = getattr(msg, "content", "") or ""
+        if "BOOKING_SUCCESS" in text or "token number" in text.lower() or "token எண்" in text.lower():
+            logger.info("Booking farewell detected — scheduling session close.")
+            async def _close():
+                await asyncio.sleep(3)
+                await session.aclose()
+            asyncio.ensure_future(_close())
 
     # 10. Greet in caller's chosen language
     name = Settings.RECEPTIONIST_NAME

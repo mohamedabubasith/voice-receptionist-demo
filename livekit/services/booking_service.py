@@ -43,7 +43,8 @@ class DentalClinicFnc:
     @llm.function_tool(
         description=(
             "Fetch all available appointment time slots from the clinic system. "
-            "Call this once the caller gives their preferred date so you can offer real available slots."
+            "Call this silently at the START of the conversation before asking any questions, "
+            "and again at step 3 to present slots to the caller."
         )
     )
     async def get_available_times(self) -> str:

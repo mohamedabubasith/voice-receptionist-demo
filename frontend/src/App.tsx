@@ -68,7 +68,7 @@ export default function App() {
     return (
       <div className={styles.screen}>
         <div className={styles.card}>
-          <div className={styles.avatar}>P</div>
+          <div className={styles.avatar}>{RECEPTIONIST_NAME[0]?.toUpperCase() ?? 'P'}</div>
           <h1 className={styles.name}>{RECEPTIONIST_NAME}</h1>
           <p className={styles.subtitle}>{CLINIC_NAME} · AI Receptionist</p>
           <div className={styles.langToggle}>
@@ -116,7 +116,7 @@ function CallInterface({ onEnd }: { onEnd: () => void }) {
   return (
     <div className={styles.screen}>
       <div className={styles.card}>
-        <div className={`${styles.avatar} ${activeState ? styles[activeState] : ''}`}>P</div>
+        <div className={`${styles.avatar} ${activeState ? styles[activeState] : ''}`}>{RECEPTIONIST_NAME[0]?.toUpperCase() ?? 'P'}</div>
         <h1 className={styles.name}>{RECEPTIONIST_NAME}</h1>
         <p className={styles.status}>{STATUS_LABELS[state as AgentState] ?? state}</p>
         <BarVisualizer state={state} track={audioTrack} barCount={9} className={styles.visualizer} />
