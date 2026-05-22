@@ -18,10 +18,6 @@ from services.llm_service import create_llm_service
 from services.booking_service import DentalClinicFnc
 from services.prompt_service import get_system_prompt
 
-try:
-    from livekit.plugins import noise_cancellation
-except ImportError:
-    noise_cancellation = None
 
 # Setup logging configuration
 logging.basicConfig(level=logging.INFO)
@@ -78,15 +74,15 @@ async def entrypoint(ctx: JobContext):
     )
 
     # 6. Configure BVC Noise Cancellation if available
-    room_input_options = None
-    if RoomInputOptions is not None and noise_cancellation is not None:
-        try:
-            room_input_options = RoomInputOptions(
-                noise_cancellation=noise_cancellation.BVC()
-            )
-            logger.info("Background Voice Cancellation (BVC) noise cancellation enabled.")
-        except Exception as err:
-            logger.warning(f"Could not configure BVC noise cancellation: {err}")
+    try:
+        from livekit.plugins import noise_cancellation
+        room_input_options = RoomInputOptions(
+            noise_cancellation=noise_cancellation.BVC()
+        )
+        logger.info("BVC noise cancellation enabled.")
+    except Exception as err:
+        room_input_options = None
+        logger.warning(f"BVC noise cancellation unavailable: {err}")
 
     # 7. Initialize the AgentSession
     session = AgentSession(
