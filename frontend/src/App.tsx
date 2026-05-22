@@ -9,9 +9,11 @@ import {
 import { SignJWT } from 'jose'
 import styles from './App.module.css'
 
-const LIVEKIT_URL = import.meta.env.VITE_LIVEKIT_URL as string
-const API_KEY     = import.meta.env.VITE_LIVEKIT_API_KEY as string
-const API_SECRET  = import.meta.env.VITE_LIVEKIT_API_SECRET as string
+const LIVEKIT_URL          = import.meta.env.VITE_LIVEKIT_URL as string
+const API_KEY              = import.meta.env.VITE_LIVEKIT_API_KEY as string
+const API_SECRET           = import.meta.env.VITE_LIVEKIT_API_SECRET as string
+const RECEPTIONIST_NAME    = (import.meta.env.VITE_RECEPTIONIST_NAME as string) || 'Priya'
+const CLINIC_NAME          = (import.meta.env.VITE_CLINIC_NAME as string) || 'Demo Clinic'
 
 type Language = 'en' | 'ta'
 
@@ -65,8 +67,8 @@ export default function App() {
       <div className={styles.screen}>
         <div className={styles.card}>
           <div className={styles.avatar}>P</div>
-          <h1 className={styles.name}>Priya</h1>
-          <p className={styles.subtitle}>Demo Clinic · AI Receptionist</p>
+          <h1 className={styles.name}>{RECEPTIONIST_NAME}</h1>
+          <p className={styles.subtitle}>{CLINIC_NAME} · AI Receptionist</p>
           <div className={styles.langToggle}>
             <button
               className={`${styles.langBtn} ${language === 'en' ? styles.langActive : ''}`}
@@ -113,7 +115,7 @@ function CallInterface({ onEnd }: { onEnd: () => void }) {
     <div className={styles.screen}>
       <div className={styles.card}>
         <div className={`${styles.avatar} ${activeState ? styles[activeState] : ''}`}>P</div>
-        <h1 className={styles.name}>Priya</h1>
+        <h1 className={styles.name}>{RECEPTIONIST_NAME}</h1>
         <p className={styles.status}>{STATUS_LABELS[state as AgentState] ?? state}</p>
         <BarVisualizer state={state} track={audioTrack} barCount={9} className={styles.visualizer} />
         <button className={`${styles.btn} ${styles.endBtn}`} onClick={handleEnd}>End Call</button>

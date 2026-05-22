@@ -58,8 +58,7 @@ async def entrypoint(ctx: JobContext):
     from livekit.plugins import silero
     vad_instance = silero.VAD.load()
 
-    stt_lang = "ta" if lang == "ta" else "en-US"
-    stt_instance = create_stt_service(language=stt_lang)
+    stt_instance = create_stt_service(language="multi")
     llm_instance = create_llm_service()
     tts_instance = create_tts_service()
 
@@ -144,6 +143,9 @@ if __name__ == "__main__":
         import health
         health.start(port=7860)
         logger.info("HF Space health server started on port 7860")
+
+    logger.info(f"LIVEKIT_URL={os.environ.get('LIVEKIT_URL', 'NOT SET')}")
+    logger.info(f"LIVEKIT_API_KEY={'SET' if os.environ.get('LIVEKIT_API_KEY') else 'NOT SET'}")
 
     cli.run_app(
         WorkerOptions(
