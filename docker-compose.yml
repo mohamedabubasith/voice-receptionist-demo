@@ -1,0 +1,24 @@
+services:
+  agent:
+    build:
+      context: ./livekit
+    env_file: ./livekit/.env
+    environment:
+      - TOKEN_COUNTER_DIR=/app/data
+    volumes:
+      - agent-data:/app/data
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_LIVEKIT_URL: ${VITE_LIVEKIT_URL}
+        VITE_LIVEKIT_API_KEY: ${VITE_LIVEKIT_API_KEY}
+        VITE_LIVEKIT_API_SECRET: ${VITE_LIVEKIT_API_SECRET}
+    ports:
+      - "3000:80"
+    restart: unless-stopped
+
+volumes:
+  agent-data:

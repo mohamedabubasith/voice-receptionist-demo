@@ -1,0 +1,34 @@
+# Environment / secrets
+.env
+.env.local
+.env.*.local
+*.env
+
+# Token counter (runtime data)
+.token_counter.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+*.egg-info/
+
+# Node
+node_modules/
+dist/
+.next/
+
+# KMS / keys
+livekit/KMS/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+.claude
+.vscode
+CLAUDE.md
