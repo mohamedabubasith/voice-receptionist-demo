@@ -1,9 +1,13 @@
-# Priya — Dental Clinic AI Receptionist
+# Dental Clinic AI Receptionist
 
 Voice AI receptionist built on LiveKit. Answers calls, collects appointment details (name, phone, date, time), books via n8n webhook. Supports English and Tamil.
 
+## Live Demo
+
+**[Try it here → https://abubasith86-appointment-agent.hf.space](https://abubasith86-appointment-agent.hf.space)**
+
 ```
-Caller → LiveKit Room → STT → LLM (Priya) → TTS → Caller
+Caller → LiveKit Room → STT → LLM (Agent) → TTS → Caller
                                   ↓
                             n8n Webhook → Clinic System
 ```
@@ -18,7 +22,7 @@ voice/
 │   ├── agent.py              Entry point — room connection, session setup
 │   ├── config.py             All env var bindings + validation
 │   ├── prompts/
-│   │   └── dental_receptionist.txt   Priya's system prompt
+│   │   └── dental_receptionist.txt   Agent system prompt
 │   └── services/
 │       ├── booking_service.py        Tool functions (book, get slots, datetime)
 │       ├── llm_service.py            LLM provider factory
