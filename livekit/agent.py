@@ -156,10 +156,16 @@ async def entrypoint(ctx: JobContext):
 
 
 def prewarm(proc_ctx):
-    # Pre-download and cache Silero VAD model to optimize agent boot time
     logger.info("Prewarming Silero VAD model...")
     from livekit.plugins import silero
     silero.VAD.load()
+
+    if Settings.STT_PROVIDER == "local" or Settings.STT_PROVIDER == "deepgram":
+        model_size = Settings.LOCAL_WHISPER_MODEL or "small"
+        logger.info(f"Prewarming local faster-whisper ({model_size}) — downloading if needed...")
+        from services.local_whisper_stt import _get_model
+        _get_model(model_size)
+        logger.info(f"faster-whisper ({model_size}) ready.")
 
 
 if __name__ == "__main__":

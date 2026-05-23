@@ -20,14 +20,48 @@ def create_stt_service(language: str = "multi") -> stt.STT:
     provider = Settings.STT_PROVIDER
     logger.info(f"Initializing STT service with provider: {provider}")
 
-    if provider == "deepgram":
+    if provider == "local":
+        from livekit.agents.stt import StreamAdapter
+        from livekit.plugins import silero
+        from services.local_whisper_stt import LocalWhisperSTT
+        model_size = Settings.LOCAL_WHISPER_MODEL or "small"
+        lang = language if language in ("en", "ta") else None
+        logger.info(f"Using local faster-whisper ({model_size}, language: {lang or 'auto'})")
+        return StreamAdapter(
+            stt=LocalWhisperSTT(
+                model_size=model_size,
+                language=lang,
+                beam_size=1,
+                best_of=1,
+                temperature=0.0,
+                no_speech_threshold=0.6,
+                vad_filter=True,
+            ),
+            vad=silero.VAD.load(),
+        )
+
+    elif provider == "deepgram":
         from livekit.plugins import deepgram
 
-        # Deepgram streaming doesn't support Tamil — use LiveKit Inference Cartesia Ink Whisper
+        # Deepgram streaming doesn't support Tamil — use local faster-whisper
         if language == "ta":
-            logger.info("Tamil caller — using LiveKit Inference cartesia/ink-whisper (no extra API key)")
-            from livekit.agents import inference
-            return inference.STT(model="cartesia/ink-whisper", language="ta")
+            from livekit.agents.stt import StreamAdapter
+            from livekit.plugins import silero
+            from services.local_whisper_stt import LocalWhisperSTT
+            model_size = Settings.LOCAL_WHISPER_MODEL or "small"
+            logger.info(f"Tamil caller — using local faster-whisper ({model_size})")
+            return StreamAdapter(
+                stt=LocalWhisperSTT(
+                    model_size=model_size,
+                    language="ta",
+                    beam_size=1,
+                    best_of=1,
+                    temperature=0.0,
+                    no_speech_threshold=0.6,
+                    vad_filter=True,
+                ),
+                vad=silero.VAD.load(),
+            )
 
         model = Settings.DEEPGRAM_MODEL or "nova-3"
         logger.info(f"Using Deepgram STT (model: {model}, language: multi)")

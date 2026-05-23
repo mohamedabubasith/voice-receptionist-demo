@@ -51,6 +51,7 @@ class Settings:
 
     DEEPGRAM_API_KEY = os.environ.get("DEEPGRAM_API_KEY", "").strip()
     DEEPGRAM_MODEL = os.environ.get("DEEPGRAM_MODEL", "nova-2").strip()
+    LOCAL_WHISPER_MODEL = os.environ.get("LOCAL_WHISPER_MODEL", "small").strip()
 
     OPENAI_STT_MODEL = os.environ.get("OPENAI_STT_MODEL", "whisper-1").strip()
 
