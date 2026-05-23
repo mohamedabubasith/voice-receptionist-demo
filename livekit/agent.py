@@ -159,13 +159,7 @@ def prewarm(proc_ctx):
     logger.info("Prewarming Silero VAD model...")
     from livekit.plugins import silero
     silero.VAD.load()
-
-    if Settings.STT_PROVIDER == "local" or Settings.STT_PROVIDER == "deepgram":
-        model_size = Settings.LOCAL_WHISPER_MODEL or "small"
-        logger.info(f"Prewarming local faster-whisper ({model_size}) — downloading if needed...")
-        from services.local_whisper_stt import _get_model
-        _get_model(model_size)
-        logger.info(f"faster-whisper ({model_size}) ready.")
+    logger.info("Silero VAD ready. Whisper loads on first call.")
 
 
 if __name__ == "__main__":
