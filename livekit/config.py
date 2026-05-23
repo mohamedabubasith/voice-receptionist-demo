@@ -70,6 +70,17 @@ class Settings:
     ELEVEN_MODEL_ID = os.environ.get("ELEVEN_MODEL_ID", "eleven_flash_v2_5").strip()
     ELEVEN_VOICE_ID = os.environ.get("ELEVEN_VOICE_ID", "21m00Tcm4TlvDq8ikWAM").strip()
 
+    # Azure TTS
+    AZURE_TTS_KEY = os.environ.get("AZURE_TTS_KEY", "").strip()
+    AZURE_TTS_REGION = os.environ.get("AZURE_TTS_REGION", "").strip()
+    AZURE_TTS_VOICE = os.environ.get("AZURE_TTS_VOICE", "en-US-JennyNeural").strip()
+    AZURE_TTS_LANGUAGE = os.environ.get("AZURE_TTS_LANGUAGE", "en-US").strip()
+
+    # Google TTS
+    GOOGLE_TTS_VOICE = os.environ.get("GOOGLE_TTS_VOICE", "en-US-Neural2-F").strip()
+    GOOGLE_TTS_LANGUAGE = os.environ.get("GOOGLE_TTS_LANGUAGE", "en-US").strip()
+    GOOGLE_CREDENTIALS_JSON = os.environ.get("GOOGLE_CREDENTIALS_JSON", "").strip()
+
     # Cartesia
     CARTESIA_API_KEY = os.environ.get("CARTESIA_API_KEY", "").strip()
     CARTESIA_MODEL = os.environ.get("CARTESIA_MODEL", "sonic-english").strip()
@@ -137,6 +148,11 @@ class Settings:
             if not cls.CARTESIA_API_KEY:
                 errors.append(
                     "CARTESIA_API_KEY is required when TTS_PROVIDER is 'cartesia'"
+                )
+        elif cls.TTS_PROVIDER == "azure":
+            if not cls.AZURE_TTS_KEY or not cls.AZURE_TTS_REGION:
+                errors.append(
+                    "AZURE_TTS_KEY and AZURE_TTS_REGION are required when TTS_PROVIDER is 'azure'"
                 )
 
         if errors:

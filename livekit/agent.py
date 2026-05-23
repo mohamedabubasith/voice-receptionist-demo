@@ -148,6 +148,16 @@ if __name__ == "__main__":
     logger.info(f"LIVEKIT_URL={os.environ.get('LIVEKIT_URL', 'NOT SET')}")
     logger.info(f"LIVEKIT_API_KEY={'SET' if os.environ.get('LIVEKIT_API_KEY') else 'NOT SET'}")
 
+    def _mask(key: str | None) -> str:
+        if not key:
+            return "NOT SET"
+        return f"{key[:4]}...{key[-4:]} (len={len(key)})"
+
+    logger.info(f"TTS_PROVIDER={os.environ.get('TTS_PROVIDER', 'NOT SET')}")
+    logger.info(f"ELEVEN_API_KEY={_mask(os.environ.get('ELEVEN_API_KEY'))}")
+    logger.info(f"ELEVEN_MODEL_ID={os.environ.get('ELEVEN_MODEL_ID', 'NOT SET')}")
+    logger.info(f"ELEVEN_VOICE_ID={os.environ.get('ELEVEN_VOICE_ID', 'NOT SET')}")
+
     cli.run_app(
         WorkerOptions(
             entrypoint_fnc=entrypoint,

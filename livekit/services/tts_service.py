@@ -71,13 +71,26 @@ def create_tts_service() -> tts.TTS:
 
     elif provider == "google":
         from livekit.plugins import google
-        logger.info("Using Google Cloud TTS")
-        return google.TTS()
+        voice = Settings.GOOGLE_TTS_VOICE or "en-US-Neural2-F"
+        language = Settings.GOOGLE_TTS_LANGUAGE or "en-US"
+        logger.info(f"Using Google Cloud TTS (voice: {voice}, language: {language})")
+        kwargs: dict = {"voice_name": voice, "language": language}
+        if Settings.GOOGLE_CREDENTIALS_JSON:
+            import json as _json
+            kwargs["credentials_info"] = _json.loads(Settings.GOOGLE_CREDENTIALS_JSON)
+        return google.TTS(**kwargs)
 
     elif provider == "azure":
         from livekit.plugins import azure
-        logger.info("Using Azure Cognitive TTS")
-        return azure.TTS()
+        voice = Settings.AZURE_TTS_VOICE or "en-US-JennyNeural"
+        language = Settings.AZURE_TTS_LANGUAGE or "en-US"
+        logger.info(f"Using Azure Cognitive TTS (voice: {voice}, language: {language})")
+        azure_kwargs: dict = {"voice": voice, "language": language}
+        if Settings.AZURE_TTS_KEY:
+            azure_kwargs["speech_key"] = Settings.AZURE_TTS_KEY
+        if Settings.AZURE_TTS_REGION:
+            azure_kwargs["speech_region"] = Settings.AZURE_TTS_REGION
+        return azure.TTS(**azure_kwargs)
 
     elif provider == "playht":
         from livekit.plugins import playht
