@@ -41,22 +41,45 @@ async def entrypoint(ctx: JobContext):
 
     # 2. Detect caller's preferred language from participant metadata
     lang = "en"
-    for participant in ctx.room.remote_participants.values():
+
+    def _extract_lang(participant) -> str:
         try:
             meta = json.loads(participant.metadata or "{}")
-            lang = meta.get("language", "en")
+            return meta.get("language", "en")
         except Exception:
-            pass
-        break
+            return "en"
+
+    participants = list(ctx.room.remote_participants.values())
+    logger.info(f"Remote participants at connect: {len(participants)}")
+
+    if participants:
+        lang = _extract_lang(participants[0])
+    else:
+        # Race: participant not yet in room — wait up to 5s
+        logger.info("No participants yet — waiting for first to join...")
+        lang_holder: list[str] = ["en"]
+        joined_event = asyncio.Event()
+
+        @ctx.room.on("participant_connected")
+        def _on_participant_connected(p) -> None:
+            lang_holder[0] = _extract_lang(p)
+            joined_event.set()
+
+        try:
+            await asyncio.wait_for(joined_event.wait(), timeout=5.0)
+            lang = lang_holder[0]
+        except asyncio.TimeoutError:
+            logger.warning("Timed out waiting for participant — defaulting to 'en'")
+
     logger.info(f"Caller language preference: {lang}")
 
     # 3. Instantiate VAD, STT, LLM, and TTS services
     from livekit.plugins import silero
     vad_instance = silero.VAD.load()
 
-    stt_instance = create_stt_service(language="multi")
+    stt_instance = create_stt_service(language=lang)
     llm_instance = create_llm_service()
-    tts_instance = create_tts_service()
+    tts_instance = create_tts_service(language=lang)
 
     # 4. Instantiate the Function Context (Booking tool) and find tools
     fnc_ctx = DentalClinicFnc()

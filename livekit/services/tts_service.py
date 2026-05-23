@@ -4,30 +4,15 @@ from config import Settings
 
 logger = logging.getLogger("dental_receptionist.tts")
 
-def create_tts_service() -> tts.TTS:
-    """
-    TTS Service Factory. Initializes Text-to-Speech engines dynamically
-    based on application settings. Lazy-imports modules to avoid boot-time
-    dependency issues when unused.
-
-    Supported providers (set TTS_PROVIDER in .env):
-        deepgram   - Deepgram Aura (default)
-        openai     - OpenAI TTS (tts-1 / tts-1-hd)
-        elevenlabs - ElevenLabs
-        cartesia   - Cartesia Sonic
-        google     - Google Cloud TTS
-        azure      - Azure Cognitive TTS
-        playht     - Play.ht
-    """
+def create_tts_service(language: str = "en") -> tts.TTS:
     provider = Settings.TTS_PROVIDER
-    logger.info(f"Initializing TTS service with provider: {provider}")
+    logger.info(f"Initializing TTS service with provider: {provider}, language: {language}")
 
     if provider == "inference":
         from livekit.agents import inference
 
         model = Settings.INFERENCE_TTS_MODEL or "cartesia/sonic-3"
         voice = Settings.INFERENCE_TTS_VOICE or "f786b574-daa5-4673-aa0c-cbe3e8534c02"
-        language = Settings.INFERENCE_TTS_LANGUAGE or "en"
         logger.info(f"Using LiveKit Inference TTS (model: {model}, voice: {voice}, language: {language})")
         return inference.TTS(model=model, voice=voice, language=language)
 

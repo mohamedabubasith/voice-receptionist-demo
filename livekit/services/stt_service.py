@@ -23,12 +23,18 @@ def create_stt_service(language: str = "multi") -> stt.STT:
     if provider == "deepgram":
         from livekit.plugins import deepgram
 
+        # Deepgram streaming doesn't support Tamil — use LiveKit Inference Cartesia Ink Whisper
+        if language == "ta":
+            logger.info("Tamil caller — using LiveKit Inference cartesia/ink-whisper (no extra API key)")
+            from livekit.agents import inference
+            return inference.STT(model="cartesia/ink-whisper", language="ta")
+
         model = Settings.DEEPGRAM_MODEL or "nova-3"
-        logger.info(f"Using Deepgram STT (model: {model}, language: {language})")
+        logger.info(f"Using Deepgram STT (model: {model}, language: multi)")
         return deepgram.STT(
             api_key=Settings.DEEPGRAM_API_KEY,
             model=model,
-            language=language,
+            language="multi",
         )
 
     elif provider == "openai":
@@ -67,5 +73,5 @@ def create_stt_service(language: str = "multi") -> stt.STT:
         return deepgram.STT(
             api_key=Settings.DEEPGRAM_API_KEY,
             model=Settings.DEEPGRAM_MODEL or "nova-3",
-            language=language,
+            language="multi",
         )

@@ -73,7 +73,6 @@ class Settings:
     # LiveKit Inference TTS (Cartesia Sonic-3 via LiveKit Cloud — no extra API key)
     INFERENCE_TTS_MODEL = os.environ.get("INFERENCE_TTS_MODEL", "cartesia/sonic-3").strip()
     INFERENCE_TTS_VOICE = os.environ.get("INFERENCE_TTS_VOICE", "f786b574-daa5-4673-aa0c-cbe3e8534c02").strip()
-    INFERENCE_TTS_LANGUAGE = os.environ.get("INFERENCE_TTS_LANGUAGE", "en").strip()
 
     # Azure TTS
     AZURE_TTS_KEY = os.environ.get("AZURE_TTS_KEY", "").strip()
