@@ -22,7 +22,16 @@ def create_tts_service() -> tts.TTS:
     provider = Settings.TTS_PROVIDER
     logger.info(f"Initializing TTS service with provider: {provider}")
 
-    if provider == "deepgram":
+    if provider == "inference":
+        from livekit.agents import inference
+
+        model = Settings.INFERENCE_TTS_MODEL or "cartesia/sonic-3"
+        voice = Settings.INFERENCE_TTS_VOICE or "f786b574-daa5-4673-aa0c-cbe3e8534c02"
+        language = Settings.INFERENCE_TTS_LANGUAGE or "en"
+        logger.info(f"Using LiveKit Inference TTS (model: {model}, voice: {voice}, language: {language})")
+        return inference.TTS(model=model, voice=voice, language=language)
+
+    elif provider == "deepgram":
         from livekit.plugins import deepgram
 
         model = Settings.TTS_MODEL or "aura-2-asteria-en"

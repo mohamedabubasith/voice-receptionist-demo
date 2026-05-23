@@ -70,6 +70,11 @@ class Settings:
     ELEVEN_MODEL_ID = os.environ.get("ELEVEN_MODEL_ID", "eleven_flash_v2_5").strip()
     ELEVEN_VOICE_ID = os.environ.get("ELEVEN_VOICE_ID", "21m00Tcm4TlvDq8ikWAM").strip()
 
+    # LiveKit Inference TTS (Cartesia Sonic-3 via LiveKit Cloud — no extra API key)
+    INFERENCE_TTS_MODEL = os.environ.get("INFERENCE_TTS_MODEL", "cartesia/sonic-3").strip()
+    INFERENCE_TTS_VOICE = os.environ.get("INFERENCE_TTS_VOICE", "f786b574-daa5-4673-aa0c-cbe3e8534c02").strip()
+    INFERENCE_TTS_LANGUAGE = os.environ.get("INFERENCE_TTS_LANGUAGE", "en").strip()
+
     # Azure TTS
     AZURE_TTS_KEY = os.environ.get("AZURE_TTS_KEY", "").strip()
     AZURE_TTS_REGION = os.environ.get("AZURE_TTS_REGION", "").strip()
