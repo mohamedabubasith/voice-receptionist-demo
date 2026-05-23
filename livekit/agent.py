@@ -6,9 +6,8 @@ from dotenv import load_dotenv
 
 load_dotenv()  # must run before any env var is read
 
-from livekit.agents import JobContext, WorkerOptions, cli, llm, AutoSubscribe, RoomInputOptions
-from livekit.agents.beta.tools import EndCallTool
-from livekit.agents.voice import Agent, AgentSession
+from livekit.agents import JobContext, WorkerOptions, cli, llm, AutoSubscribe
+from livekit.agents.voice import Agent, AgentSession, room_io
 from livekit import rtc
 
 from config import Settings
@@ -96,32 +95,30 @@ async def entrypoint(ctx: JobContext):
         instructions=system_prompt,
     )
 
-    # 6. Configure BVC Noise Cancellation if available
-    try:
-        from livekit.plugins import noise_cancellation
-        room_input_options = RoomInputOptions(
-            noise_cancellation=noise_cancellation.BVC()
-        )
-        logger.info("BVC noise cancellation enabled.")
-    except Exception as err:
-        room_input_options = None
-        logger.warning(f"BVC noise cancellation unavailable: {err}")
-
-    # 7. Initialize the AgentSession
+    # 6. Initialize the AgentSession
     session = AgentSession(
         stt=stt_instance,
         vad=vad_instance,
         llm=llm_instance,
         tts=tts_instance,
-        tools=[*tools, EndCallTool()],
+        tools=[*tools],
     )
 
+    # 7. Build room options with noise cancellation
+    try:
+        from livekit.plugins import noise_cancellation
+        _room_options = room_io.RoomOptions(
+            audio_input=room_io.AudioInputOptions(
+                noise_cancellation=noise_cancellation.BVC()
+            )
+        )
+        logger.info("BVC noise cancellation enabled.")
+    except Exception as err:
+        _room_options = room_io.RoomOptions()
+        logger.warning(f"BVC unavailable, running without noise cancellation: {err}")
+
     # 8. Start the agent session in the room
-    if room_input_options is not None:
-        await session.start(agent, room=ctx.room, room_input_options=room_input_options)
-    else:
-        await session.start(agent, room=ctx.room)
-        
+    await session.start(agent, room=ctx.room, room_options=_room_options)
     logger.info("Agent session started successfully.")
 
     # 9. Shut down cleanly when the caller leaves the room

@@ -100,11 +100,13 @@ class DentalClinicFnc:
             logger.error("N8N_WEBHOOK_URL not configured.")
             return "Booking failed: webhook URL is not configured."
 
+        token = _next_daily_token()
         payload = {
             "name": name,
             "phone": phone,
             "date": date,
             "time": time,
+            "token": token,
             "clinic": os.environ.get("CLINIC_NAME", "Demo Clinic"),
         }
         logger.info(f"Booking payload → {payload}")
@@ -114,7 +116,6 @@ class DentalClinicFnc:
                 async with session.post(webhook_url, json=payload) as response:
                     text = await response.text()
                     if response.status in [200, 201]:
-                        token = _next_daily_token()
                         logger.info(f"Booking succeeded. Token: {token}. Response: {text}")
                         return (
                             f"BOOKING_SUCCESS|token={token}|name={name}|date={date}|time={time}"

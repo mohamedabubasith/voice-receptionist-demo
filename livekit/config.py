@@ -51,7 +51,8 @@ class Settings:
 
     DEEPGRAM_API_KEY = os.environ.get("DEEPGRAM_API_KEY", "").strip()
     DEEPGRAM_MODEL = os.environ.get("DEEPGRAM_MODEL", "nova-2").strip()
-    LOCAL_WHISPER_MODEL = os.environ.get("LOCAL_WHISPER_MODEL", "small").strip()
+
+    SPEECHMATICS_API_KEY = os.environ.get("SPEECHMATICS_API_KEY", "").strip()
 
     OPENAI_STT_MODEL = os.environ.get("OPENAI_STT_MODEL", "whisper-1").strip()
 
@@ -116,7 +117,11 @@ class Settings:
             errors.append("GEMINI_API_KEY is required when LLM_PROVIDER is 'google'")
 
         # STT validation
-        if cls.STT_PROVIDER == "deepgram" and not cls.DEEPGRAM_API_KEY:
+        if cls.STT_PROVIDER == "speechmatics" and not cls.SPEECHMATICS_API_KEY:
+            errors.append(
+                "SPEECHMATICS_API_KEY is required when STT_PROVIDER is 'speechmatics'"
+            )
+        elif cls.STT_PROVIDER == "deepgram" and not cls.DEEPGRAM_API_KEY:
             errors.append(
                 "DEEPGRAM_API_KEY is required when STT_PROVIDER is 'deepgram'"
             )
